@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,14 +17,6 @@
             align-items: center;
             padding: 20px;
             margin: 0;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.8;
         }
         .missions {
             text-align: left;
@@ -47,8 +40,27 @@
             background-color: #4752C4;
         }
     </style>
+    <script>
+        async function checkAuthorization() {
+            let userId = localStorage.getItem("user_id");
+            if (!userId) {
+                document.getElementById("auth-status").innerText = "❌ Not Authorized";
+                return;
+            }
+
+            let response = await fetch("https://your-server.com/check_auth?user_id=" + userId);
+            let data = await response.json();
+
+            if (data.authorized) {
+                document.getElementById("auth-status").innerText = "✅ Authorized!";
+                document.getElementById("level-status").innerText = "🎉 You have unlocked Level 2!";
+            } else {
+                document.getElementById("auth-status").innerText = "❌ Not Authorized";
+            }
+        }
+    </script>
 </head>
-<body>
+<body onload="checkAuthorization()">
     <h1>Missions Are Now Open!</h1>
     <p>Complete missions to earn rewards!</p>
     
@@ -56,10 +68,12 @@
         <h2>Level 1 Mission</h2>
         <p>Authorize our Discord bot to continue.</p>
         <a href="https://discord.com/oauth2/authorize?client_id=1351706761869918309" target="_blank" class="authorize-button">Authorize</a>
-        
+        <p id="auth-status">Checking authorization...</p>
+        <p id="level-status"></p>  <!-- Show level progress -->
+
         <h2>Mission Levels</h2>
         <ul>
-            <li><strong>Level 2:</strong> <@&1228031355867107392> Role</li>
+            <li><strong>Level 2:</strong> <@&1228031355867107392> Role ✅ (Unlocked after authorization)</li>
             <li><strong>Level 3:</strong> <@&1228031355867107394> Role</li>
             <li><strong>Level 4:</strong> 50 Robux</li>
             <li><strong>Level 5:</strong> 10 Promotion Codes For <@&1348519587381121076> to give out to friends!</li>
@@ -74,4 +88,5 @@
     </div>
 </body>
 </html>
+
 
