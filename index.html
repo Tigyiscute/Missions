@@ -32,87 +32,46 @@
             border-radius: 10px;
             max-width: 500px;
         }
-        .progress-container {
-            width: 100%;
-            background-color: #333;
+        .authorize-button {
+            display: inline-block;
+            background-color: #5865F2;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
             border-radius: 5px;
-            overflow: hidden;
-            margin-top: 10px;
+            margin-top: 15px;
+            transition: 0.3s;
         }
-        .progress-bar {
-            height: 20px;
-            background-color: #4CAF50;
-            width: 0%;
-            transition: width 0.5s;
-        }
-        #gamepass-form {
-            display: none;
-            margin-top: 20px;
-        }
-        input, button {
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 1rem;
+        .authorize-button:hover {
+            background-color: #4752C4;
         }
     </style>
 </head>
 <body>
     <h1>Missions Are Now Open!</h1>
     <p>Complete missions to earn rewards!</p>
-
+    
     <div class="missions">
         <h2>Level 1 Mission</h2>
-        <p>Send 35 messages in the Discord server.</p>
+        <p>Authorize our Discord bot to continue.</p>
+        <a href="https://discord.com/oauth2/authorize?client_id=1351706761869918309" target="_blank" class="authorize-button">Authorize</a>
+        
+        <h2>Mission Levels</h2>
+        <ul>
+            <li><strong>Level 2:</strong> <@&1228031355867107392> Role</li>
+            <li><strong>Level 3:</strong> <@&1228031355867107394> Role</li>
+            <li><strong>Level 4:</strong> 50 Robux</li>
+            <li><strong>Level 5:</strong> 10 Promotion Codes For <@&1348519587381121076> to give out to friends!</li>
+        </ul>
 
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <p id="progress-text">0 / 35 Messages</p>
+        <h2>Completion Rewards</h2>
+        <ul>
+            <li><strong>Exclusive Reward:</strong> <@&1351689460500136038> Role</li>
+            <li>Access to chat in <#1251999494032068791></li>
+            <li>Over <strong>10 Pings</strong> allowance!</li>
+        </ul>
     </div>
-
-    <!-- Gamepass Submission Form -->
-    <div id="gamepass-form">
-        <h3>Submit Your Roblox Gamepass Link</h3>
-        <input type="text" id="gamepass-link" placeholder="Enter your Gamepass link">
-        <button onclick="submitGamepass()">Submit</button>
-    </div>
-
-    <audio id="success-sound" src="https://www.myinstants.com/media/sounds/tuturu.mp3"></audio>
-
-    <script>
-        // Simulate getting progress from the backend
-        function getProgress() {
-            // Fetch from backend in real use
-            return parseInt(localStorage.getItem("messages") || 0);
-        }
-
-        function updateProgress(messages) {
-            localStorage.setItem("messages", messages);
-            let progressBar = document.getElementById("progress-bar");
-            let progressText = document.getElementById("progress-text");
-
-            let percentage = (messages / 35) * 100;
-            progressBar.style.width = percentage + "%";
-            progressText.innerText = messages + " / 35 Messages";
-
-            if (messages >= 35) {
-                document.getElementById("gamepass-form").style.display = "block";
-                document.getElementById("success-sound").play();
-            }
-        }
-
-        function submitGamepass() {
-            let link = document.getElementById("gamepass-link").value;
-            if (link) {
-                alert("Gamepass link submitted successfully!");
-                // Send to backend in real implementation
-            } else {
-                alert("Please enter a valid Gamepass link.");
-            }
-        }
-
-        // Initialize progress bar
-        updateProgress(getProgress());
-    </script>
 </body>
 </html>
+
