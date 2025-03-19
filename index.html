@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missions Are Now Open!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        .missions {
+            text-align: left;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        #gamepass-form {
+            display: none;
+            margin-top: 20px;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Missions Are Now Open!</h1>
+    <p>Complete missions to earn rewards!</p>
+
+    <div class="missions">
+        <h2>Level 1 Mission</h2>
+        <p>Send 35 messages in the Discord server.</p>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="progress-text">0 / 35 Messages</p>
+    </div>
+
+    <!-- Gamepass Submission Form -->
+    <div id="gamepass-form">
+        <h3>Submit Your Roblox Gamepass Link</h3>
+        <input type="text" id="gamepass-link" placeholder="Enter your Gamepass link">
+        <button onclick="submitGamepass()">Submit</button>
+    </div>
+
+    <audio id="success-sound" src="https://www.myinstants.com/media/sounds/tuturu.mp3"></audio>
+
+    <script>
+        // Simulate getting progress from the backend
+        function getProgress() {
+            // Fetch from backend in real use
+            return parseInt(localStorage.getItem("messages") || 0);
+        }
+
+        function updateProgress(messages) {
+            localStorage.setItem("messages", messages);
+            let progressBar = document.getElementById("progress-bar");
+            let progressText = document.getElementById("progress-text");
+
+            let percentage = (messages / 35) * 100;
+            progressBar.style.width = percentage + "%";
+            progressText.innerText = messages + " / 35 Messages";
+
+            if (messages >= 35) {
+                document.getElementById("gamepass-form").style.display = "block";
+                document.getElementById("success-sound").play();
+            }
+        }
+
+        function submitGamepass() {
+            let link = document.getElementById("gamepass-link").value;
+            if (link) {
+                alert("Gamepass link submitted successfully!");
+                // Send to backend in real implementation
+            } else {
+                alert("Please enter a valid Gamepass link.");
+            }
+        }
+
+        // Initialize progress bar
+        updateProgress(getProgress());
+    </script>
+</body>
+</html>
