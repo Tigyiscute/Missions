@@ -24,55 +24,60 @@
             border-radius: 10px;
             max-width: 500px;
         }
-        .authorize-button {
-            display: inline-block;
-            background-color: #5865F2;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-size: 1.2rem;
+        .progress-bar {
+            width: 100%;
+            background-color: #333;
             border-radius: 5px;
-            margin-top: 15px;
-            transition: 0.3s;
+            overflow: hidden;
+            margin: 10px 0;
         }
-        .authorize-button:hover {
-            background-color: #4752C4;
+        .progress {
+            height: 20px;
+            width: 0%;
+            background-color: #4CAF50;
+            text-align: center;
+            color: white;
+            line-height: 20px;
         }
     </style>
     <script>
-        async function checkAuthorization() {
+        async function checkProgress() {
             let userId = localStorage.getItem("user_id");
             if (!userId) {
-                document.getElementById("auth-status").innerText = "❌ Not Authorized";
+                document.getElementById("progress-text").innerText = "❌ No progress found";
                 return;
             }
 
-            let response = await fetch("https://your-server.com/check_auth?user_id=" + userId);
+            let response = await fetch("https://your-server.com/check_progress?user_id=" + userId);
             let data = await response.json();
 
-            if (data.authorized) {
-                document.getElementById("auth-status").innerText = "✅ Authorized!";
+            let progress = Math.min((data.messages / 5) * 100, 100);
+            document.getElementById("progress-bar").style.width = progress + "%";
+            document.getElementById("progress-text").innerText = `📊 ${data.messages}/5 messages sent`;
+
+            if (data.unlocked) {
                 document.getElementById("level-status").innerText = "🎉 You have unlocked Level 2!";
-            } else {
-                document.getElementById("auth-status").innerText = "❌ Not Authorized";
             }
         }
     </script>
 </head>
-<body onload="checkAuthorization()">
+<body onload="checkProgress()">
     <h1>Missions Are Now Open!</h1>
     <p>Complete missions to earn rewards!</p>
-    
+
     <div class="missions">
         <h2>Level 1 Mission</h2>
-        <p>Authorize our Discord bot to continue.</p>
-        <a href="https://discord.com/oauth2/authorize?client_id=1351706761869918309" target="_blank" class="authorize-button">Authorize</a>
-        <p id="auth-status">Checking authorization...</p>
-        <p id="level-status"></p>  <!-- Show level progress -->
+        <p>Send **5 messages** in the Discord server to unlock Level 2.</p>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar">0%</div>
+        </div>
+        <p id="progress-text">📊 0/5 messages sent</p>
+        <p id="level-status"></p>
 
         <h2>Mission Levels</h2>
         <ul>
-            <li><strong>Level 2:</strong> <@&1228031355867107392> Role ✅ (Unlocked after authorization)</li>
+            <li><strong>Level 2:</strong> <@&1228031355867107392> Role ✅ (Unlocked after 5 messages)</li>
             <li><strong>Level 3:</strong> <@&1228031355867107394> Role</li>
             <li><strong>Level 4:</strong> 50 Robux</li>
             <li><strong>Level 5:</strong> 10 Promotion Codes For <@&1348519587381121076> to give out to friends!</li>
@@ -87,5 +92,4 @@
     </div>
 </body>
 </html>
-
 
