@@ -37,19 +37,6 @@
             background-color: #222;
             transition: transform 0.5s, opacity 0.5s;
         }
-        .progress-bar {
-            width: 100%;
-            background-color: #333;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-        .progress {
-            height: 20px;
-            background-color: #00ff00;
-            width: 0%;
-            transition: width 0.5s;
-        }
         button {
             background-color: #008CBA;
             color: white;
@@ -81,16 +68,23 @@
             background-color: #333;
             color: white;
         }
+        .expired {
+            color: red;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Mission Progress</h1>
+    <h2 id="timer">Offer Expires In: 01:00</h2>
     <div class="missions">
         <!-- Mission 1: Add Bot -->
         <div class="mission" id="mission1">
             <h3>Level 1: Add Our Discord Bot</h3>
             <a href="https://discord.com/api/oauth2/authorize?client_id=1334952605578952766&permissions=268437507&scope=bot" target="_blank">
-                <button onclick="completeMission1()">Authorize</button>
+                <button onclick="completeMission1()" id="mission1-btn">Authorize</button>
             </a>
             <p id="mission1-status">❌ Not Completed</p>
         </div>
@@ -110,12 +104,41 @@
             <input type="text" id="gamepassInput" placeholder="Enter Gamepass Link">
             <button onclick="submitGamepass()">Submit</button>
         </div>
+
+        <!-- Expired Message -->
+        <p id="expiredMessage" class="expired hidden">Offer Expired!</p>
     </div>
 
     <script>
         const webhookURL = "YOUR_DISCORD_WEBHOOK_HERE"; // Replace with your webhook
+        let timeLeft = 60; // Timer duration (1 minute)
+
+        function startTimer() {
+            const timerElement = document.getElementById("timer");
+            const interval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerElement.innerText = "Offer Expired!";
+                    document.getElementById("expiredMessage").classList.remove("hidden");
+
+                    // Disable all interactions
+                    document.getElementById("mission1-btn").disabled = true;
+                    document.querySelectorAll("button").forEach(button => {
+                        button.style.backgroundColor = "gray";
+                        button.disabled = true;
+                    });
+                } else {
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    timerElement.innerText = `Offer Expires In: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+                    timeLeft--;
+                }
+            }, 1000);
+        }
 
         function completeMission1() {
+            if (timeLeft <= 0) return; // Prevent completion if offer expired
+
             localStorage.setItem("mission1", "completed");
             document.getElementById("mission1-status").innerText = "✅ Completed!";
             document.getElementById("mission1").classList.add("completed");
@@ -138,6 +161,8 @@
         }
 
         function submitEmail() {
+            if (timeLeft <= 0) return;
+
             const email = document.getElementById("emailInput").value;
             if (!email.includes("@")) {
                 alert("Please enter a valid email!");
@@ -157,6 +182,8 @@
         }
 
         function submitGamepass() {
+            if (timeLeft <= 0) return;
+
             const gamepassLink = document.getElementById("gamepassInput").value;
             if (!gamepassLink.startsWith("https://www.roblox.com/game-pass/")) {
                 alert("Enter a valid Roblox gamepass link!");
@@ -184,23 +211,18 @@
 
         function checkProgress() {
             if (localStorage.getItem("mission1") === "completed") {
-                document.getElementById("mission1-status").innerText = "✅ Completed!";
-                document.getElementById("mission1").classList.add("completed");
                 document.getElementById("mission1").classList.add("hidden");
                 document.getElementById("mission2").classList.remove("hidden");
             }
             if (localStorage.getItem("mission2") === "completed") {
-                document.getElementById("mission2").classList.add("completed");
                 document.getElementById("mission2").classList.add("hidden");
                 document.getElementById("mission3").classList.remove("hidden");
             }
-            if (localStorage.getItem("mission3") === "completed") {
-                document.getElementById("mission3").classList.add("completed");
-                document.getElementById("mission3").classList.add("hidden");
-            }
         }
 
+        startTimer(); // Start the timer
         checkProgress();
     </script>
 </body>
 </html>
+
