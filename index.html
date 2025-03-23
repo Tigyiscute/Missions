@@ -35,6 +35,7 @@
             padding: 15px;
             border-radius: 8px;
             background-color: #222;
+            transition: transform 0.5s, opacity 0.5s;
         }
         .progress-bar {
             width: 100%;
@@ -64,7 +65,21 @@
             background-color: #0073a6;
         }
         .completed {
+            transform: scale(1.1);
+            opacity: 0.8;
             background-color: #00c851;
+        }
+        .hidden {
+            display: none;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background-color: #333;
+            color: white;
         }
     </style>
 </head>
@@ -80,53 +95,112 @@
             <p id="mission1-status">❌ Not Completed</p>
         </div>
 
-        <!-- Mission 2: Send Messages -->
-        <div class="mission">
-            <h3>Level 2: Send 5 Messages in the Server</h3>
-            <p id="progressText">Progress: 0/5 messages</p>
-            <div class="progress-bar">
-                <div id="progressBar" class="progress"></div>
-            </div>
+        <!-- Mission 2: Enter Email (Hidden Initially) -->
+        <div class="mission hidden" id="mission2">
+            <h3>Level 2: Enter Your Email</h3>
+            <p>Enter your email to receive exclusive rewards!</p>
+            <input type="email" id="emailInput" placeholder="Enter your email">
+            <button onclick="submitEmail()">Submit</button>
+        </div>
+
+        <!-- Mission 3: Enter Roblox Gamepass Link (Hidden Initially) -->
+        <div class="mission hidden" id="mission3">
+            <h3>Level 3: Claim Your 10 Robux</h3>
+            <p>Enter your Roblox Gamepass link to receive 10 Robux.</p>
+            <input type="text" id="gamepassInput" placeholder="Enter Gamepass Link">
+            <button onclick="submitGamepass()">Submit</button>
         </div>
     </div>
 
     <script>
-        const userID = "123456789"; // Replace this dynamically if needed
+        const webhookURL = "YOUR_DISCORD_WEBHOOK_HERE"; // Replace with your webhook
 
         function completeMission1() {
             localStorage.setItem("mission1", "completed");
             document.getElementById("mission1-status").innerText = "✅ Completed!";
             document.getElementById("mission1").classList.add("completed");
+
+            // Send webhook notification
+            fetch(webhookURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: "Member Reward Available! Go check it" })
+            });
+
+            // Show next mission
+            setTimeout(() => {
+                document.getElementById("mission1").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("mission1").classList.add("hidden");
+                    document.getElementById("mission2").classList.remove("hidden");
+                }, 500);
+            }, 1000);
         }
 
-        function checkMission1() {
+        function submitEmail() {
+            const email = document.getElementById("emailInput").value;
+            if (!email.includes("@")) {
+                alert("Please enter a valid email!");
+                return;
+            }
+
+            localStorage.setItem("mission2", "completed");
+            document.getElementById("mission2").classList.add("completed");
+
+            setTimeout(() => {
+                document.getElementById("mission2").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("mission2").classList.add("hidden");
+                    document.getElementById("mission3").classList.remove("hidden");
+                }, 500);
+            }, 1000);
+        }
+
+        function submitGamepass() {
+            const gamepassLink = document.getElementById("gamepassInput").value;
+            if (!gamepassLink.startsWith("https://www.roblox.com/game-pass/")) {
+                alert("Enter a valid Roblox gamepass link!");
+                return;
+            }
+
+            localStorage.setItem("mission3", "completed");
+            document.getElementById("mission3").classList.add("completed");
+
+            // Send webhook notification
+            fetch(webhookURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: `10 Robux Reward (${gamepassLink})` })
+            });
+
+            setTimeout(() => {
+                document.getElementById("mission3").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("mission3").classList.add("hidden");
+                    alert("Congrats! You've completed all available missions!");
+                }, 500);
+            }, 1000);
+        }
+
+        function checkProgress() {
             if (localStorage.getItem("mission1") === "completed") {
                 document.getElementById("mission1-status").innerText = "✅ Completed!";
                 document.getElementById("mission1").classList.add("completed");
+                document.getElementById("mission1").classList.add("hidden");
+                document.getElementById("mission2").classList.remove("hidden");
+            }
+            if (localStorage.getItem("mission2") === "completed") {
+                document.getElementById("mission2").classList.add("completed");
+                document.getElementById("mission2").classList.add("hidden");
+                document.getElementById("mission3").classList.remove("hidden");
+            }
+            if (localStorage.getItem("mission3") === "completed") {
+                document.getElementById("mission3").classList.add("completed");
+                document.getElementById("mission3").classList.add("hidden");
             }
         }
 
-        async function updateProgress() {
-            try {
-                const response = await fetch(`https://your-replit-url.repl.co/progress/${userID}`);
-                const data = await response.json();
-
-                // Update the progress bar and text
-                document.getElementById("progressText").innerText = `Progress: ${data.messages}/5 messages`;
-                document.getElementById("progressBar").style.width = `${(data.messages / 5) * 100}%`;
-
-                // If mission is complete, show success message
-                if (data.messages >= 5) {
-                    document.getElementById("progressText").innerText = "✅ Mission Complete!";
-                }
-            } catch (error) {
-                console.error("Error fetching progress:", error);
-            }
-        }
-
-        checkMission1();
-        updateProgress();
+        checkProgress();
     </script>
 </body>
 </html>
-
